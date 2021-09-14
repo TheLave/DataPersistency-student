@@ -30,27 +30,31 @@
 -- S2.1. Vier-daagse cursussen
 --
 -- Geef code en omschrijving van alle cursussen die precies vier dagen duren.
--- DROP VIEW IF EXISTS s2_1; CREATE OR REPLACE VIEW s2_1 AS                                                     -- [TEST]
+DROP VIEW IF EXISTS s2_1; CREATE OR REPLACE VIEW s2_1 AS                                                     -- [TEST]
+    SELECT code, omschrijving FROM cursussen WHERE lengte = 4;
 
 
 -- S2.2. Medewerkersoverzicht
 --
 -- Geef alle informatie van alle medewerkers, gesorteerd op functie,
 -- en per functie op leeftijd (van jong naar oud).
--- DROP VIEW IF EXISTS s2_2; CREATE OR REPLACE VIEW s2_2 AS                                                     -- [TEST]
+DROP VIEW IF EXISTS s2_2; CREATE OR REPLACE VIEW s2_2 AS                                                     -- [TEST]
+    SELECT * FROM medewerkers ORDER BY functie, gbdatum ASC;
 
 
 -- S2.3. Door het land
 --
 -- Welke cursussen zijn in Utrecht en/of in Maastricht uitgevoerd? Geef
 -- code en begindatum.
--- DROP VIEW IF EXISTS s2_3; CREATE OR REPLACE VIEW s2_3 AS                                                     -- [TEST]
+DROP VIEW IF EXISTS s2_3; CREATE OR REPLACE VIEW s2_3 AS                                                     -- [TEST]
+    SELECT cursus, begindatum FROM uitvoeringen WHERE locatie = 'UTRECT' OR locatie = 'MAASTRICHT';
 
 
 -- S2.4. Namen
 --
 -- Geef de naam en voorletters van alle medewerkers, behalve van R. Jansen.
--- DROP VIEW IF EXISTS s2_4; CREATE OR REPLACE VIEW s2_4 AS                                                     -- [TEST]
+DROP VIEW IF EXISTS s2_4; CREATE OR REPLACE VIEW s2_4 AS                                                     -- [TEST]
+    SELECT naam, voorl FROM medewerkers WHERE voorl || '. ' || naam <> 'R. JANSEN';
 
 
 -- S2.5. Nieuwe SQL-cursus
@@ -58,7 +62,7 @@
 -- Er wordt een nieuwe uitvoering gepland voor cursus S02, en wel op de
 -- komende 2 maart. De cursus wordt gegeven in Leerdam door Nick Smit.
 -- Voeg deze gegevens toe.
-INSERT
+INSERT INTO uitvoeringen (cursus, begindatum, docent, locatie) VALUES ('S02', '2022-03-02', 7369, 'LEERDAM')
 ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
 
 
@@ -66,7 +70,8 @@ ON CONFLICT DO NOTHING;                                                         
 --
 -- Neem één van je collega-studenten aan als stagiair ('STAGIAIR') en
 -- voer zijn of haar gegevens in. Kies een personeelnummer boven de 8000.
-INSERT
+INSERT INTO medewerkers (mnr, naam, voorl, functie, chef, gbdatum, maandsal, comm, afd, geslacht)
+VALUES (8100, 'DOE', 'J', 'STAGIAIR', 7839, '2000-04-17', 3000, NULL, 20, 'M')
 ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
 
 
@@ -74,7 +79,8 @@ ON CONFLICT DO NOTHING;                                                         
 --
 -- We breiden het salarissysteem uit naar zes schalen. Voer een extra schaal in voor mensen die
 -- tussen de 3001 en 4000 euro verdienen. Zij krijgen een toelage van 500 euro.
-INSERT
+INSERT INTO schalen (snr, ondergrens, bovengrens, toelage)
+VALUES (6, 3001, 4000, 500)
 ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
 
 
@@ -83,17 +89,23 @@ ON CONFLICT DO NOTHING;                                                         
 -- Er wordt een nieuwe 6-daagse cursus 'Data & Persistency' in het programma opgenomen.
 -- Voeg deze cursus met code 'D&P' toe, maak twee uitvoeringen in Leerdam en schrijf drie
 -- mensen in.
-INSERT
+INSERT INTO cursussen (code, omschrijving, type, lengte)
+VALUES ('D&P', 'Data & Persistency', 'ALG', 6)
 ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
-INSERT
+INSERT INTO uitvoeringen (cursus, begindatum, docent, locatie)
+VALUES ('D&P', '2021-11-02', 7369, 'LEERDAM')
 ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
-INSERT
+INSERT INTO uitvoeringen (cursus, begindatum, docent, locatie)
+VALUES ('D&P', '2021-11-05', 7369, 'LEERDAM')
 ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
-INSERT
+INSERT INTO inschrijvingen (cursist, cursus, begindatum, evaluatie)
+VALUES (7566, 'D&P', '2021-11-02', NULL)
 ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
-INSERT
+INSERT INTO inschrijvingen (cursist, cursus, begindatum, evaluatie)
+VALUES (7499, 'D&P', '2021-11-02', NULL)
 ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
-INSERT
+INSERT INTO inschrijvingen (cursist, cursus, begindatum, evaluatie)
+VALUES (7876, 'D&P', '2021-11-05', NULL)
 ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
 
 
@@ -117,11 +129,14 @@ ON CONFLICT DO NOTHING;                                                         
 --
 -- Je wordt hoofd van de nieuwe afdeling 'FINANCIEN' te Leerdam,
 -- onder de hoede van De Koning. Kies een personeelnummer boven de 8000.
--- Zorg voor de juiste invoer van deze gegevens.
-INSERT
-ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
+-- Zorg voor de juiste invoer van deze gegevens.                                                                                  -- [TEST]
+--
+INSERT INTO medewerkers (mnr, naam, voorl, functie, chef, gbdatum, maandsal, comm, afd, geslacht)
+VALUES (8123, 'THIADENS', 'M', 'MANAGER', 7839, '2000-04-17', 5000, NULL, 60, 'M')
+ON CONFLICT DO NOTHING;                                                                                       -- [TEST]
 
-INSERT
+INSERT INTO medewerkers (mnr, naam, voorl, functie, chef, gbdatum, maandsal, comm, afd, geslacht)
+VALUES (8123, 'THIADENS', 'M', 'MANAGER', 7839, '2000-04-17', 5000, NULL, 60, 'M')
 ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
 
 

@@ -35,6 +35,9 @@
 -- geaccepteerd. Test deze regel en neem de gegooide foutmelding op als
 -- commentaar in de uitwerking.
 
+ALTER TABLE medewerkers
+    ADD geslacht CHAR(1),
+    ADD CONSTRAINT m_geslacht_chk CHECK (geslacht = 'M' OR geslacht = 'V');
 
 -- S1.2. Nieuwe afdeling
 --
@@ -44,6 +47,11 @@
 -- en valt direct onder de directeur.
 -- Voeg de nieuwe afdeling en de nieuwe medewerker toe aan de database.
 
+INSERT INTO medewerkers (mnr, naam, voorl, functie, chef, gbdatum, maandsal, comm, afd, geslacht)
+VALUES (8000, 'DONK', 'A', 'MANAGER', 7839,  TO_DATE('1979-02-13', 'YYYY/MM/DD'), 4000, null, null, 'M');
+INSERT INTO afdelingen (anr, naam, locatie, hoofd) VALUES
+(50, 'ONDERZOEK', 'ZWOLLE', 8000);
+UPDATE medewerkers SET afd = 50 WHERE mnr = 8000;
 
 -- S1.3. Verbetering op afdelingentabel
 --
@@ -55,6 +63,12 @@
 --   c) Op enig moment gaat het mis. De betreffende kolommen zijn te klein voor
 --      nummers van 3 cijfers. Los dit probleem op.
 
+CREATE SEQUENCE afd_nummer_seq
+INCREMENT 10
+START 10
+MINVALUE 10
+MAXVALUE 1000000
+CACHE 50;
 
 -- S1.4. Adressen
 --
@@ -75,6 +89,10 @@
 -- De commissie van een medewerker (kolom `comm`) moet een bedrag bevatten als de medewerker een functie als
 -- 'VERKOPER' heeft, anders moet de commissie NULL zijn. Schrijf hiervoor een beperkingsregel. Gebruik onderstaande
 -- 'illegale' INSERTs om je beperkingsregel te controleren.
+
+    ALTER TABLE medewerkers
+        ADD CONSTRAINT func_comm_chk
+        CHECK ((functie = 'VERKOPER' AND comm IS NOT NULL) or (functie <> 'VERKOPER' and comm IS NULL));
 
 INSERT INTO medewerkers (mnr, naam, voorl, functie, chef, gbdatum, maandsal, comm)
 VALUES (8001, 'MULLER', 'TJ', 'TRAINER', 7566, '1982-08-18', 2000, 500);
